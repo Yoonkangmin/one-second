@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1초의 선택 - 당신의 상식은 정말 맞을까?</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+        }
+        .scene {
+            display: none;
+        }
+        .scene.active {
+            display: block;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #FF4D00;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+        p.description {
+            font-size: 1.1rem;
+            color: #AAAAAA;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        button {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .btn-main {
+            background-color: #FF4D00;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            margin-top: 20px;
+        }
+        .btn-main:hover {
+            background-color: #E64500;
+            transform: scale(1.05);
+        }
+        .choices-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn-choice {
+            background-color: #252525;
+            color: white;
+            border: 2px solid #333333;
+            padding: 20px;
+            font-size: 1.1rem;
+            text-align: left;
+            border-radius: 10px;
+        }
+        .btn-choice:hover {
+            border-color: #FF4D00;
+            background-color: #2A2A2A;
+        }
+        .feedback-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            background-color: #1A1A1A;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #FF4D00;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <div id="scene-start" class="scene active">
+            <h1>《1초의 선택》</h1>
+            <p class="description">
+                당신은 지금부터 10개의 상황을 경험하게 됩니다.<br>
+                정답은 없습니다.<br>
+                다만, 선택에는 결과가 있습니다.
+            </p>
+            <button class="btn-main" onclick="nextScene('scene-situation-1')">START</button>
+        </div>
+        <div id="scene-situation-1" class="scene">
+            <p class="description">📱 친구가 카페에서...</p>
+            <h2>에너지음료 4캔을 마신 뒤 갑자기 <br>"심장이 너무 빨리 뛰어..."<br>라고 말한다.</h2>
+            <div class="choices-container">
+                <button class="btn-choice" onclick="showFeedback('wrong')">① 물을 많이 마시게 한다</button>
+                <button class="btn-choice" onclick="showFeedback('wrong')">② 눕혀서 쉰다</button>
+                <button class="btn-choice" onclick="showFeedback('correct')">③ 119를 부른다</button>
+                <button class="btn-choice" onclick="showFeedback('wrong')">④ 당분을 먹인다</button>
+            </div>
+        </div>
+        <div id="scene-feedback-1" class="scene">
+            <h2>당신의 선택, <br>5분 후...</h2>
+            <div id="feedback-content" class="feedback-text"></div>
+            <button class="btn-main" onclick="nextScene('scene-end')">다음 상황으로</button>
+        </div>
+        <div id="scene-end" class="scene">
+            <h1>프로그램 종료</h1>
+            <p class="description">
+                첫 번째 상황을 체험해보셨습니다.<br>
+                나머지 9가지 상황도 이와 같은 구조로 붙여넣으면 <br>
+                완성된 인터랙티브 프로그램을 만들 수 있습니다.<br><br>
+                고생하셨습니다!
+            </p>
+            <button class="btn-main" onclick="location.reload()">다시 하기</button>
+        </div>
+    </div>
+    <script>
+        function nextScene(sceneId) {
+            const scenes = document.querySelectorAll('.scene');
+            scenes.forEach(scene => scene.classList.remove('active'));
+            const targetScene = document.getElementById(sceneId);
+            if (targetScene) {
+                targetScene.classList.add('active');
+            }
+        }
+        function showFeedback(type) {
+            const feedbackContent = document.getElementById('feedback-content');
+            if (type === 'correct') {
+                feedbackContent.innerHTML = `
+                    <span style="color: #4CAF50; font-weight:bold;">[훌륭한 판단입니다!]</span><br><br>
+                    카페인 과다섭취로 인한 심계항진은 빈맥 등 위험한 심장 증상으로 이어질 수 있으므로, 즉각적인 전문 의료진의 확인이 필요합니다.
+                `;
+            } else {
+                feedbackContent.innerHTML = `
+                    <span style="color: #F44336; font-weight:bold;">[증상이 계속됩니다.]</span><br><br>
+                    물을 마시거나 휴식을 취하는 것은 응급상황의 근본적인 원인(카페인 과다)을 해결하지 못할 수 있습니다. 상태가 악화되기 전에 도움을 요청해야 합니다.
+                `;
+            }
+            nextScene('scene-feedback-1');
+        }
+    </script>
+</body>
+</html>
