@@ -48,6 +48,24 @@
             line-height: 1.7;
             word-break: keep-all;
         }
+        /* 이름 입력 칸 스타일 */
+        .input-name {
+            width: 80%;
+            max-width: 300px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #333;
+            border-radius: 25px;
+            background-color: #1a1a1a;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-name:focus {
+            border-color: #FF4D00;
+        }
         button {
             cursor: pointer;
             transition: all 0.2s ease;
@@ -61,7 +79,7 @@
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 30px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .btn-main:hover {
             background-color: #E64500;
@@ -114,6 +132,30 @@
             color: #666;
             margin-bottom: 10px;
         }
+        /* 랭킹 테이블 스타일 */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 30px;
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .leaderboard-table th {
+            background-color: #222;
+            color: #FF4D00;
+            font-weight: bold;
+        }
+        .leaderboard-table tr:first-child td {
+            color: #FFD700; /* 1등은 금색 */
+            font-weight: bold;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -126,8 +168,12 @@
             <h2>당신의 상식은 정말 맞을까?</h2>
             <p class="description">
                 당신은 지금부터 10개의 일상 속 응급 상황을 마주하게 됩니다.<br>
-                정답은 단 하나뿐이며, 잘못된 상식은 생명을 위협할 수 있습니다.<br><br>
+                정답은 단 하나뿐이며, 잘못된 상식은 생명을 위협할 수 있습니다.<br>
             </p>
+            
+            <div>
+                <input type="text" id="player-name-input" class="input-name" placeholder="참여자 이름을 입력하세요" maxlength="10">
+            </div>
             <button class="btn-main" onclick="startQuiz()">START</button>
         </div>
 
@@ -153,9 +199,21 @@
             <div id="type-content" class="feedback-text" style="border-left-color: #4CAF50;">
                 </div>
 
+            <h2>🏆 실시간 명예의 전당 (순위표)</h2>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>이름</th>
+                        <th>맞힌 개수</th>
+                        <th>기록 시간</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    </tbody>
+            </table>
+
             <p class="description">
-                우리는 응급처치를 아예 모르는 것이 아니라,<br>
-                잘못된 상식으로 알고 있는 경우가 더 많습니다.<br>
                 오늘 배운 올바른 대처법을 꼭 기억해 주세요!
             </p>
             <button class="btn-main" onclick="location.reload()">다시 도전하기</button>
@@ -278,7 +336,7 @@
                 title: "혹한기 등산 후 하산한 환자가 사지를 심하게 떨더니, 점차 떨림을 멈추고 헛소리를 하며 주저앉는다.",
                 choices: [
                     { text: "① 체온을 급격히 끌어올리기 위해 환자의 사지와 얼어붙은 손끝을 마찰열이 나도록 아주 세고 매섭게 비비고 주무른다.", type: "danger", correct: false },
-                    { text: "② 신속하게 젖은 옷을 전부 완전히 벗겨 차단하고, 마른 담요나 전용 보온 포로 몸 전체를 가온시킨다.", type: "evidence", correct: true },
+                    { text: "② 신속하게 젖은 오을 전부 완전히 벗겨 차단하고, 마른 담요나 전용 보온 포로 몸 전체를 가온시킨다.", type: "evidence", correct: true },
                     { text: "③ 동상을 해결하고 중심 체온을 급속도로 회복하기 위해 뜨거운 열탕 속에 환자를 즉시 입수시킨다.", type: "danger", correct: false },
                     { text: "④ 알코올이 말초 혈관을 확장해 몸에 열을 내도록 따뜻하게 데운 술을 강제로 주입한다.", type: "observation", correct: false }
                 ],
@@ -289,6 +347,7 @@
 
         let currentQuestionIndex = 0;
         let score = 0;
+        let playerName = "무명 참여자";
 
         const personalityScores = {
             prompt: 0,
@@ -297,7 +356,18 @@
             danger: 0
         };
 
+        // 퀴즈 시작 기능
         function startQuiz() {
+            const nameInput = document.getElementById('player-name-input');
+            const nameVal = nameInput.value.trim();
+
+            if (nameVal === "") {
+                alert("이름을 꼭 적어주세요!");
+                nameInput.focus();
+                return;
+            }
+
+            playerName = nameVal; // 이름 저장
             currentQuestionIndex = 0;
             score = 0;
             personalityScores.prompt = 0;
@@ -369,8 +439,53 @@
             }
         }
 
+        // 랭킹 저장 및 동적 그리기
+        function handleRanking(name, finalScore) {
+            // LocalStorage에서 기존 데이터를 가져옴
+            let rankings = JSON.parse(localStorage.getItem('quizRankings')) || [];
+
+            // 새로운 기록 만들기 (현재 시각 포함)
+            const dateStr = new Date().toLocaleDateString('ko-KR', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const newRecord = {
+                name: name,
+                score: finalScore,
+                time: dateStr
+            };
+
+            // 목록에 추가하고, 점수 높은 순으로 정렬
+            rankings.push(newRecord);
+            rankings.sort((a, b) => b.score - a.score);
+
+            // 상위 10개만 유지 (옵션)
+            rankings = rankings.slice(0, 10);
+
+            // 다시 저장소에 보관
+            localStorage.setItem('quizRankings', JSON.stringify(rankings));
+
+            // 테이블 본문에 표시
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            leaderboardBody.innerHTML = '';
+
+            rankings.forEach((record, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}위</td>
+                    <td>${record.name}</td>
+                    <td>${record.score}개</td>
+                    <td style="font-size:0.85rem; color:#888;">${record.time}</td>
+                `;
+                leaderboardBody.appendChild(tr);
+            });
+        }
+
         function showResult() {
-            document.getElementById('score-display').innerText = `10문제 중 ${score}개 올바른 판단`;
+            document.getElementById('score-display').innerText = `${playerName}님은 10문제 중 ${score}개 올바른 판단`;
 
             let maxType = 'evidence';
             let maxScore = -1;
@@ -386,24 +501,27 @@
             if (maxType === 'prompt') {
                 typeContent.innerHTML = `
                     <strong>⚡ 신속형 의사결정자 (The Prompt Responder)</strong><br><br>
-                    당신은 응급상황에서 망설임 없이 확실한 구급 조치와 골든타임을 확보하려 노력하는 빠른 판단력의 소유자입니다. 생과 사를 가르는 치명적인 위기일수록 당신과 같은 단호함이 생명을 살려냅니다.
+                    ${playerName}님은 응급상황에서 망설임 없이 확실한 구급 조치와 골든타임을 확보하려 노력하는 빠른 판단력의 소유자입니다. 생과 사를 가르는 치명적인 위기일수록 당신과 같은 단호함이 생명을 살려냅니다.
                 `;
             } else if (maxType === 'evidence') {
                 typeContent.innerHTML = `
                     <strong>📚 의학 근거형 분석가 (The Evidence-based Caregiver)</strong><br><br>
-                    당신은 어설픈 선입견에 의지하지 않고 현대 응급의학의 입증된 사실과 디테일한 처치법을 숙지하고 있는 든든한 상식가입니다. 복잡하게 얽힌 응급 지침을 냉철하게 고르는 탁월한 브레인입니다.
+                    ${playerName}님은 어설픈 선입견에 의지하지 않고 현대 응급의학의 입증된 사실과 디테일한 처치법을 숙지하고 있는 든든한 상식가입니다. 복잡하게 얽힌 응급 지침을 냉철하게 고르는 탁월한 브레인입니다.
                 `;
             } else if (maxType === 'observation') {
                 typeContent.innerHTML = `
                     <strong>🔍 신중한 관찰자 (The Calm Watcher)</strong><br><br>
-                    당신은 환자 상태를 지켜보고 불필요한 움직임을 제한하여 환자를 위험으로부터 보호하려 합니다. 신중함은 좋으나, 뇌졸중이나 호흡 마비 상태에서는 과감하고 속도감 있는 조치가 생존율을 대폭 끌어올린다는 것을 명심해 주세요.
+                    ${playerName}님은 환자 상태를 지켜보고 불필요한 움직임을 제한하여 환자를 위험으로부터 보호하려 합니다. 신중함은 좋으나, 뇌졸중이나 호흡 마비 상태에서는 과감하고 속도감 있는 조치가 생존율을 대폭 끌어올린다는 것을 명심해 주세요.
                 `;
             } else {
                 typeContent.innerHTML = `
                     <strong>⚠️ 위험감수형 상식가 (The Risky Folk-mediciner)</strong><br><br>
-                    당신은 영화나 미디어, 조상들의 민간지식에 의도치 않게 익숙했던 편입니다. 하지만 안타깝게도 우리가 '안전하다'고 믿었던 사혈, 마찰열 비비기, 입으로 빨아내기 등은 환자의 치사율을 가속시키는 요인입니다. 이번 테스트로 완전히 바로잡으셨길 바랍니다!
+                    ${playerName}님은 영화나 미디어, 조상들의 민간지식에 의도치 않게 익숙했던 편입니다. 하지만 안타깝게도 우리가 '안전하다'고 믿었던 사혈, 마찰열 비비기, 입으로 빨아내기 등은 환자의 치사율을 가속시키는 요인입니다. 이번 테스트로 완전히 바로잡으셨길 바랍니다!
                 `;
             }
+
+            // 랭킹 저장소 처리 및 화면 출력 실행
+            handleRanking(playerName, score);
 
             nextScene('scene-result');
         }
