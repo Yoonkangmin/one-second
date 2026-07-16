@@ -13,14 +13,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
         }
         #game-container {
             width: 90%;
             max-width: 600px;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
+            box-sizing: border-box;
         }
         .scene {
             display: none;
@@ -29,21 +29,24 @@
             display: block;
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             color: #FF4D00;
             margin-bottom: 10px;
+            word-break: keep-all;
         }
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 500;
-            margin-bottom: 30px;
-            line-height: 1.4;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            word-break: keep-all;
         }
         p.description {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #AAAAAA;
-            margin-bottom: 40px;
-            line-height: 1.6;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            word-break: keep-all;
         }
         button {
             cursor: pointer;
@@ -55,7 +58,7 @@
             color: white;
             border: none;
             padding: 15px 40px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             border-radius: 30px;
             margin-top: 20px;
@@ -67,94 +70,357 @@
         .choices-container {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 25px;
         }
         .btn-choice {
             background-color: #252525;
             color: white;
             border: 2px solid #333333;
-            padding: 20px;
-            font-size: 1.1rem;
+            padding: 18px;
+            font-size: 1rem;
             text-align: left;
             border-radius: 10px;
+            line-height: 1.4;
+            word-break: keep-all;
         }
         .btn-choice:hover {
             border-color: #FF4D00;
             background-color: #2A2A2A;
         }
         .feedback-text {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             line-height: 1.6;
             margin-bottom: 30px;
             background-color: #1A1A1A;
             padding: 20px;
             border-radius: 10px;
             border-left: 5px solid #FF4D00;
+            text-align: left;
+            word-break: keep-all;
+        }
+        .score-badge {
+            font-size: 1.2rem;
+            color: #FF4D00;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: inline-block;
+            border: 1px solid #FF4D00;
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+        .progress-bar {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <div id="game-container">
+
         <div id="scene-start" class="scene active">
             <h1>《1초의 선택》</h1>
+            <h2>부제 : 당신의 상식은 정말 맞을까?</h2>
             <p class="description">
-                당신은 지금부터 10개의 상황을 경험하게 됩니다.<br>
-                정답은 없습니다.<br>
-                다만, 선택에는 결과가 있습니다.
+                당신은 지금부터 10개의 일상 속 응급 상황을 마주하게 됩니다.<br>
+                정답은 단 하나뿐이며, 잘못된 상식은 생명을 위협할 수 있습니다.<br><br>
+                <strong>당신의 판단을 믿어보세요.</strong>
             </p>
-            <button class="btn-main" onclick="nextScene('scene-situation-1')">START</button>
+            <button class="btn-main" onclick="startQuiz()">START</button>
         </div>
-        <div id="scene-situation-1" class="scene">
-            <p class="description">📱 친구가 카페에서...</p>
-            <h2>에너지음료 4캔을 마신 뒤 갑자기 <br>"심장이 너무 빨리 뛰어..."<br>라고 말한다.</h2>
-            <div class="choices-container">
-                <button class="btn-choice" onclick="showFeedback('wrong')">① 물을 많이 마시게 한다</button>
-                <button class="btn-choice" onclick="showFeedback('wrong')">② 눕혀서 쉰다</button>
-                <button class="btn-choice" onclick="showFeedback('correct')">③ 119를 부른다</button>
-                <button class="btn-choice" onclick="showFeedback('wrong')">④ 당분을 먹인다</button>
-            </div>
+
+        <div id="scene-quiz" class="scene">
+            <div id="quiz-progress" class="progress-bar">문제 1 / 10</div>
+            <p id="quiz-icon" class="description">📱 상황 발생</p>
+            <h2 id="quiz-title">상황 질문 텍스트 영역</h2>
+            <div id="quiz-choices" class="choices-container">
+                </div>
         </div>
-        <div id="scene-feedback-1" class="scene">
-            <h2>당신의 선택, <br>5분 후...</h2>
+
+        <div id="scene-feedback" class="scene">
+            <h2>당신의 선택 결과</h2>
             <div id="feedback-content" class="feedback-text"></div>
-            <button class="btn-main" onclick="nextScene('scene-end')">다음 상황으로</button>
+            <button class="btn-main" onclick="goToNext()">다음 상황으로</button>
         </div>
-        <div id="scene-end" class="scene">
-            <h1>프로그램 종료</h1>
+
+        <div id="scene-result" class="scene">
+            <h1>진단 완료</h1>
+            <div id="score-display" class="score-badge">10문제 중 0개 올바른 판단</div>
+            
+            <h2>당신의 대처 판단 유형</h2>
+            <div id="type-content" class="feedback-text" style="border-left-color: #4CAF50;">
+                </div>
+
             <p class="description">
-                첫 번째 상황을 체험해보셨습니다.<br>
-                나머지 9가지 상황도 이와 같은 구조로 붙여넣으면 <br>
-                완성된 인터랙티브 프로그램을 만들 수 있습니다.<br><br>
-                고생하셨습니다!
+                우리는 응급처치를 아예 모르는 것이 아니라,<br>
+                잘못된 상식으로 알고 있는 경우가 더 많습니다.<br>
+                오늘 배운 올바른 대처법을 꼭 기억해 주세요!
             </p>
-            <button class="btn-main" onclick="location.reload()">다시 하기</button>
+            <button class="btn-main" onclick="location.reload()">다시 도전하기</button>
         </div>
+
     </div>
+
     <script>
+        // 10가지 상황 데이터 구성
+        const quizData = [
+            {
+                icon: "🏀 상황 1: 운동 중 부상",
+                title: "체육 시간, 농구를 하다가 부딪혀 친구의 앞니가 뿌리째 통째로 빠져버렸다. 어떻게 해야 할까?",
+                choices: [
+                    { text: "① 세균이 묻었을 수 있으니 수돗물에 깨끗이 비벼 씻어 보관한다.", type: "danger", correct: false },
+                    { text: "② 치아가 마르지 않도록 우유나 식염수에 담가서 병원으로 간다.", type: "evidence", correct: true },
+                    { text: "③ 빠진 자리에 흙이 들어가지 않도록 거즈로 꽉 막고 내일 병원에 간다.", type: "danger", correct: false },
+                    { text: "④ 치아의 뿌리 부분을 꼭 쥐고 휴지에 감싸 주머니에 넣어 간다.", type: "observation", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 치아 뿌리에는 미세한 신경과 인대 조직이 있습니다. 마르거나 수돗물 화학물질에 닿으면 손상되므로 우유나 식염수에 담가 30분 내로 가야 살릴 수 있습니다.",
+                wrongFeedback: "[위험한 선택입니다!] 빠진 치아의 뿌리는 손으로 만지거나 수돗물로 세게 씻으면 안 됩니다. 세포가 다 죽어 다시 심을 수 없게 됩니다. 우유나 식염수에 보관하는 것이 핵심입니다."
+            },
+            {
+                icon: "📱 상황 2: 카페인 과다",
+                title: "시험기간, 에너지음료를 연달아 4캔 마신 친구가 갑자기 '심장이 너무 빨리 뛰고 아파...'라고 말한다.",
+                choices: [
+                    { text: "① 찬물을 많이 마시게 하고 의식을 잃는지 지켜본다.", type: "observation", correct: false },
+                    { text: "② 편안하게 누워서 안정을 취하게 한 뒤 밤새 지켜본다.", type: "danger", correct: false },
+                    { text: "③ 즉시 119를 부르거나 지체 없이 응급실로 이동한다.", type: "prompt", correct: true },
+                    { text: "④ 혈당 저하 현상일 수 있으니 사탕이나 초콜릿을 먹인다.", type: "danger", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 고카페인으로 인한 급성 부정맥이나 빈맥은 생명에 지장을 줄 수 있으므로 지체 없이 응급 조치 및 의료진 확인이 필요합니다.",
+                wrongFeedback: "[위험한 선택입니다!] 단순히 '쉬면 낫겠지' 하다가 큰 심장 손상으로 이어질 수 있습니다. 심박수가 과하게 요동칠 때는 지체 없이 병원으로 가야 합니다."
+            },
+            {
+                icon: "⛰️ 상황 3: 독사 물림",
+                title: "등산 중 풀숲에서 뱀에게 발목을 물렸다. 잇자국이 두 개 선명하다.",
+                choices: [
+                    { text: "① 즉시 입으로 상처 부위를 강하게 빨아내어 독을 뱉는다.", type: "danger", correct: false },
+                    { text: "② 물린 곳 위쪽을 손수건으로 꽉 조이고, 최대한 움직이지 않게 고정 후 구조를 기다린다.", type: "evidence", correct: true },
+                    { text: "③ 독이 퍼지는 것을 막기 위해 상처 부위에 얼음을 대고 비빈다.", type: "danger", correct: false },
+                    { text: "④ 독사의 종류를 파악해야 하므로 뱀을 잡으러 쫓아간다.", type: "prompt", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 독을 빨아내는 것은 입속 미세 상처로 독이 체내에 또 흡수되게 만드는 위험한 행동입니다. 묶고 최대한 심장보다 낮춘 채 움직이지 않아야 독의 확산을 늦춥니다.",
+                wrongFeedback: "[위험한 선택입니다!] 영화처럼 입으로 독을 빠는 것은 처치자까지 위험하게 만듭니다. 상처 부위를 심장보다 낮추고 움직임을 최소화하는 것이 정답입니다."
+            },
+            {
+                icon: "🦟 상황 4: 귀 속 벌레",
+                title: "캠핑 중 귀 안으로 날벌레가 날아 들어갔다. 버둥거리는 느낌에 고통스럽다.",
+                choices: [
+                    { text: "① 귀 안을 손가락이나 핀셋, 면봉을 깊숙이 넣어 끄집어낸다.", type: "danger", correct: false },
+                    { text: "② 빛을 좋아하는 벌레를 유인하기 위해 손전등 불빛을 귀 안으로 비춘다.", type: "danger", correct: false },
+                    { text: "③ 올리브유나 베이비오일을 한두 방울 흘려 넣어 벌레를 죽여 나오게 한 후 병원에 간다.", type: "evidence", correct: true },
+                    { text: "④ 귀를 손바닥으로 마구 때려 진동으로 떨어뜨린다.", type: "observation", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 오일을 넣어 벌레를 얌전하게 죽인 후 이비인후과로 가는 것이 안전합니다. 핀셋으로 쑤시면 벌레가 더 안으로 들어가 고막을 상하게 합니다.",
+                wrongFeedback: "[위험한 선택입니다!] 귀에 불빛을 비추면 오히려 벌레가 놀라 고막 쪽으로 깊게 파고들 수 있습니다. 면봉 조작 또한 절대 금기입니다."
+            },
+            {
+                icon: "🏊 상황 5: 물에 빠짐",
+                title: "계곡에서 물에 빠졌던 친구가 다행히 물을 조금 토해내고 스스로 걸어 나오며 '나 이제 괜찮아'라고 한다.",
+                choices: [
+                    { text: "① 본인이 괜찮다고 하니 안심하고 집으로 돌려보낸다.", type: "danger", correct: false },
+                    { text: "② 따뜻한 음료를 마시게 하고 캠핑을 계속 즐긴다.", type: "observation", correct: false },
+                    { text: "③ 폐에 물이 남아 '지연성 익사'가 올 수 있으므로 반드시 병원 진료를 받게 한다.", type: "evidence", correct: true },
+                    { text: "④ 체온을 높이기 위해 술을 한 잔 마시게 한다.", type: "danger", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 물에 빠진 뒤에는 수 시간 뒤에 폐에 물이 차 숨을 거두는 '지연성 익사(마른 익사)' 위험이 존재하므로, 멀쩡해 보여도 반드시 24시간 동안 정밀 관찰과 진료를 받아야 합니다.",
+                wrongFeedback: "[위험한 선택입니다!] 겉으로는 멀쩡해 보여도 폐 내부로 소량 흘러 들어간 물이 산소 공급을 서서히 방해하는 지연성 합병증이 일어날 수 있습니다."
+            },
+            {
+                icon: "🧪 상황 6: 화학세제 눈 유입",
+                title: "욕실 청소를 하다가 강력 락스 성분의 세제가 눈에 강하게 튀었다.",
+                choices: [
+                    { text: "① 착용하고 있는 콘택트렌즈부터 조심스럽게 빼낸다.", type: "danger", correct: false },
+                    { text: "② 눈을 비비지 않고, 흐르는 깨끗한 물이나 식염수로 최소 15분 이상 계속 씻어낸다.", type: "evidence", correct: true },
+                    { text: "③ 안약(인공눈물)을 몇 방울 넣고 눈을 감은 채 쉰다.", type: "observation", correct: false },
+                    { text: "④ 수건으로 눈을 꽉 누르고 이물질을 닦아낸다.", type: "danger", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 화학물질이 튀었을 때는 렌즈 제거 여부보다 '흐르는 물에 즉시 대량으로 세척'하여 농도를 희석하는 것이 각막 손상을 최소화하는 유일한 길입니다.",
+                wrongFeedback: "[위험한 선택입니다!] 손으로 비비거나 렌즈를 만지다 상처가 깊어질 수 있고 약한 세척으로는 안 됩니다. 흐르는 물에 오랫동안 지속해서 씻어내야 안전합니다."
+            },
+            {
+                icon: "🩹 상황 7: 손가락 절단",
+                title: "부주의로 날카로운 칼이나 문 틈에 손가락 끝마디가 잘려 나갔다.",
+                choices: [
+                    { text: "① 절단된 부위를 얼음이 가득 담긴 주머니 속에 직접 집어넣어 가져간다.", type: "danger", correct: false },
+                    { text: "② 잘린 부위를 흐르는 수돗물에 비누로 깨끗이 씻어 비닐에 넣는다.", type: "observation", correct: false },
+                    { text: "③ 생리식염수에 적신 거즈로 감싸 비닐봉지에 밀봉한 뒤, 그 봉지를 얼음물 통에 담가 차갑게 보관해 간다.", type: "evidence", correct: true },
+                    { text: "④ 지혈가루(지혈제)를 상처에 가득 뿌리고 붕대로 감는다.", type: "danger", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 절단 부위 조직이 얼음에 직접 닿으면 동상이 걸려 접합 수술이 불가능해집니다. 반드시 건조 밀봉한 채 간접적으로 얼음물 온도를 유지해야 합니다.",
+                wrongFeedback: "[위험한 선택입니다!] 얼음에 살점이 직접 닿으면 세포가 파괴되어 접합할 수 없게 됩니다. 물에 직접 닿지 않도록 거즈로 싼 뒤 '이중 밀봉'하여 얼음물에 띄워가야 합니다."
+            },
+            {
+                icon: "🩸 상황 8: 반복되는 코피",
+                title: "친구가 코피가 자주 반복해서 나는데, 휴지로 막으면 금방 멈추기는 한다. 어떻게 조언할까?",
+                choices: [
+                    { text: "① 멈추기만 하면 아무 문제 없으니 코를 촉촉하게 유지하라고 한다.", type: "observation", correct: false },
+                    { text: "② 머리를 뒤로 젖히고 목을 톡톡 쳐주라고 한다.", type: "danger", correct: false },
+                    { text: "③ 코피가 멈추더라도 주 3회 이상 반복된다면 비강 내 혈관 문제나 전신 질환일 수 있으니 이비인후과 진료를 권장한다.", type: "evidence", correct: true },
+                    { text: "④ 피를 너무 많이 흘려 빈혈이 오니 선지나 고기를 먹으라고 한다.", type: "danger", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 자주 반복되는 코피는 비막 혈관이 약해졌거나 고혈압, 혈액 응고 장애 등의 신호일 수 있어 진료가 꼭 필요합니다.",
+                wrongFeedback: "[위험한 선택입니다!] 고개를 뒤로 젖히면 피가 기도로 넘어가 흡인성 폐렴을 유발합니다. 또한 빈번한 재발은 원인을 치료해야 멈춥니다."
+            },
+            {
+                icon: "🧠 상황 9: 얼굴 비대칭",
+                title: "함께 밥을 먹던 친구가 활짝 웃는데 한쪽 입꼬리만 올라가고 반대쪽은 처져 반응이 없다.",
+                choices: [
+                    { text: "① 시험기간이라 피곤해서 생긴 일시적인 신경 마비 같으니 푹 자라고 한다.", type: "danger", correct: false },
+                    { text: "② 뇌졸중(뇌혈관) 경고 신호(FAST)일 가능성이 매우 높으므로 즉시 응급실로 동행한다.", type: "prompt", correct: true },
+                    { text: "③ 따뜻한 물수건으로 얼굴을 마사지해 주며 풀리길 기다린다.", type: "observation", correct: false },
+                    { text: "④ 얼굴 경련 예방을 위해 마그네슘 영양제를 챙겨 먹인다.", type: "danger", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 한쪽 얼굴 마비, 팔 처짐, 언어 장애 등은 급성 뇌졸중의 주요 전조 증상입니다. 치료 '골든 타임'이 초 단위로 지나가고 있으므로 즉시 가야 합니다.",
+                wrongFeedback: "[위험한 선택입니다!] 안면 비대칭 마비는 뇌로 가는 혈류가 막혀 발생하는 치명적인 적신호일 수 있으므로 지체하면 마비가 평생 남게 됩니다."
+            },
+            {
+                icon: "🥶 상황 10: 저체온증",
+                title: "겨울철 등산을 마치고 내려온 친구가 몸을 심하게 떨며 말을 계속 더듬고 헛소리를 한다.",
+                choices: [
+                    { text: "① 즉시 혈액 순환을 돕기 위해 소주나 따뜻한 술을 몇 모금 마시게 한다.", type: "danger", correct: false },
+                    { text: "② 뜨거운 목욕탕이나 욕조 물속에 급하게 집어넣어 몸을 지지게 한다.", type: "danger", correct: false },
+                    { text: "③ 젖은 옷을 빨리 벗긴 뒤, 마른 담요나 침낭으로 온몸을 감싸고 따뜻한 곳에서 체온이 서서히 올라가게 돕는다.", type: "evidence", correct: true },
+                    { text: "④ 손발을 아주 매섭게 비비고 때려서 마찰열을 발생시킨다.", type: "observation", correct: false }
+                ],
+                correctFeedback: "[훌륭한 판단입니다!] 급격하게 뜨거운 물에 넣거나 술을 먹이면 말초 혈관이 갑자기 확장되어 심장으로 가는 혈액이 부족해 쇼크(사망)사가 일어날 수 있습니다. 서서히 가온하는 것이 철칙입니다.",
+                wrongFeedback: "[위험한 선택입니다!] 술이나 뜨거운 물에 바로 집어넣는 극단적인 온도 변화는 혈압 쇼크사(심정지)를 일으킵니다. 젖은 옷을 벗기고 서서히 몸통 중심으로 데워야 합니다."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // 사용자의 대처 선택지 통계를 위한 성향 점수
+        const personalityScores = {
+            prompt: 0,     // 신속/판단형
+            evidence: 0,   // 근거/원칙형
+            observation: 0,// 관찰/대기형
+            danger: 0      // 잘못된 상식/위험감수형
+        };
+
+        // 퀴즈 시작 함수
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            personalityScores.prompt = 0;
+            personalityScores.evidence = 0;
+            personalityScores.observation = 0;
+            personalityScores.danger = 0;
+            
+            showQuestion();
+            nextScene('scene-quiz');
+        }
+
+        // 특정 씬으로 전환하는 함수
         function nextScene(sceneId) {
             const scenes = document.querySelectorAll('.scene');
             scenes.forEach(scene => scene.classList.remove('active'));
-            const targetScene = document.getElementById(sceneId);
-            if (targetScene) {
-                targetScene.classList.add('active');
-            }
+            document.getElementById(sceneId).classList.add('active');
+            window.scrollTo(0, 0);
         }
-        function showFeedback(type) {
+
+        // 현재 인덱스 질문 보여주기
+        function showQuestion() {
+            const data = quizData[currentQuestionIndex];
+            
+            // 프로그레스 바 표시
+            document.getElementById('quiz-progress').innerText = `상황 ${currentQuestionIndex + 1} / 10`;
+            document.getElementById('quiz-icon').innerText = data.icon;
+            document.getElementById('quiz-title').innerText = data.title;
+
+            // 선택지 렌더링
+            const choicesContainer = document.getElementById('quiz-choices');
+            choicesContainer.innerHTML = ''; // 초기화
+
+            data.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-choice';
+                btn.innerText = choice.text;
+                // 버튼 클릭 시 처리
+                btn.onclick = () => selectAnswer(choice);
+                choicesContainer.appendChild(btn);
+            });
+        }
+
+        // 사용자가 선택지를 골랐을 때
+        function selectAnswer(choice) {
+            const currentData = quizData[currentQuestionIndex];
             const feedbackContent = document.getElementById('feedback-content');
-            if (type === 'correct') {
+
+            // 성향 점수 가산
+            if (personalityScores[choice.type] !== undefined) {
+                personalityScores[choice.type] += 1;
+            }
+
+            if (choice.correct) {
+                score += 1; // 맞춘 개수 카운트
                 feedbackContent.innerHTML = `
-                    <span style="color: #4CAF50; font-weight:bold;">[훌륭한 판단입니다!]</span><br><br>
-                    카페인 과다섭취로 인한 심계항진은 빈맥 등 위험한 심장 증상으로 이어질 수 있으므로, 즉각적인 전문 의료진의 확인이 필요합니다.
+                    <span style="color: #4CAF50; font-weight:bold; font-size:1.2rem;">🟢 올바른 대처입니다!</span><br><br>
+                    ${currentData.correctFeedback}
                 `;
             } else {
                 feedbackContent.innerHTML = `
-                    <span style="color: #F44336; font-weight:bold;">[증상이 계속됩니다.]</span><br><br>
-                    물을 마시거나 휴식을 취하는 것은 응급상황의 근본적인 원인(카페인 과다)을 해결하지 못할 수 있습니다. 상태가 악화되기 전에 도움을 요청해야 합니다.
+                    <span style="color: #F44336; font-weight:bold; font-size:1.2rem;">❌ 오답 조치입니다!</span><br><br>
+                    ${currentData.wrongFeedback}
                 `;
             }
-            nextScene('scene-feedback-1');
+
+            nextScene('scene-feedback');
+        }
+
+        // '다음 상황으로' 버튼 누를 때 흐름 제어
+        function goToNext() {
+            currentQuestionIndex += 1;
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+                nextScene('scene-quiz');
+            } else {
+                showResult();
+            }
+        }
+
+        // 최종 결과 화면 계산 및 표시
+        function showResult() {
+            document.getElementById('score-display').innerText = `10문제 중 ${score}개 올바른 판단`;
+
+            // MBTI 분석기처럼 점수가 가장 높은 성향 계산
+            let maxType = 'evidence';
+            let maxScore = -1;
+            for (const [type, val] of Object.entries(personalityScores)) {
+                if (val > maxScore) {
+                    maxScore = val;
+                    maxType = type;
+                }
+            }
+
+            const typeContent = document.getElementById('type-content');
+            
+            // 성향별 안내 멘트 분기
+            if (maxType === 'prompt') {
+                typeContent.innerHTML = `
+                    <strong>⚡ 신속형 의사결정자 (The Prompt Responder)</strong><br><br>
+                    당신은 응급상황에서 주저함 없이 119를 부르고 바로 골든타임을 파악하는 능력이 매우 뛰어납니다. 과잉대응처럼 보여도 초기 확실한 구조를 선택하는 용기 있는 리더 타입입니다.
+                `;
+            } else if (maxType === 'evidence') {
+                typeContent.innerHTML = `
+                    <strong>📚 의학 근거형 분석가 (The Evidence-based Caregiver)</strong><br><br>
+                    당신은 응급처치의 올바른 원리와 과학적 근거에 대한 지식이 풍부합니다. 얼음을 직접 대지 않거나 우유에 보관하는 등의 디테일하고 정확한 지침을 알고 최상의 구조 성공률을 자랑합니다.
+                `;
+            } else if (maxType === 'observation') {
+                typeContent.innerHTML = `
+                    <strong>🔍 신중한 관찰자 (The Calm Watcher)</strong><br><br>
+                    당신은 환자 옆에서 사태를 조심스럽게 파악하며 무리한 오동작을 최소화하려 노력합니다. 다만, 뇌졸중이나 카페인 중독 등 즉각적인 결단이 필요할 때는 조금 더 빠른 결단력이 도움이 됩니다.
+                `;
+            } else {
+                typeContent.innerHTML = `
+                    <strong>⚠️ 위험감수형 상식가 (The Risky Folk-mediciner)</strong><br><br>
+                    당신은 주변에서 흔히 쓰이는 민간요법이나 영화에서 본 지식(얼음 대기, 상처 묶기, 입으로 빨아내기 등)에 익숙할 수 있습니다. 오늘 검증된 안전 가이드를 통해 지식을 교정하여 더 나은 안전 파트너가 될 수 있습니다!
+                `;
+            }
+
+            nextScene('scene-result');
         }
     </script>
 </body>
