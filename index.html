@@ -12,37 +12,58 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            transition: background 0.8s ease; /* 계절별 배경 부드러운 전환 */
+            transition: background 1s ease-in-out; /* 배경이 물들듯 부드럽게 전환 */
             color: #2D3748;
-            /* 기본/초기 배경 (화사한 그라데이션) */
+            /* 기본 시작 배경 (은은한 그라데이션) */
             background: linear-gradient(135deg, #E2E8F0 0%, #EDF2F7 100%);
+            background-attachment: fixed;
         }
 
-        /* 🌸 계절별 화사한 컬러 그라데이션 배경 */
+        /* 🌸 [봄] 흩날리는 벚꽃과 따스한 햇살 */
         body.spring {
-            background: linear-gradient(135deg, #FFDEE9 0%, #FFB6C1 100%); /* 화사한 벚꽃 핑크 */
-        }
-        body.summer {
-            background: linear-gradient(135deg, #81FBB8 0%, #28C76F 100%); /* 청량한 여름 바다/초록 */
-        }
-        body.autumn {
-            background: linear-gradient(135deg, #FFE259 0%, #FFA751 100%); /* 따뜻한 단풍/노을 앰버 */
-        }
-        body.winter {
-            background: linear-gradient(135deg, #E0C3FC 0%, #8EC5FC 100%); /* 차갑고 영롱한 겨울 오로라 */
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.6) 0%, transparent 40%),
+                linear-gradient(135deg, #FF9A9E 0%, #FECFEF 50%, #FEADA6 100%);
+            background-attachment: fixed;
         }
 
-        /* 중앙 메인 컨테이너 (화이트 반투명 유리 스타일) */
+        /* 🌊 [여름] 청량한 에메랄드 바다와 시원한 수평선 */
+        body.summer {
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 40%),
+                linear-gradient(135deg, #A8EDEA 0%, #00C6FB 50%, #005BEA 100%);
+            background-attachment: fixed;
+        }
+
+        /* 🍁 [가을] 황금빛 단풍과 붉게 물드는 감성 노을 */
+        body.autumn {
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #FAD961 0%, #F76B1C 60%, #A83279 100%);
+            background-attachment: fixed;
+        }
+
+        /* ❄️ [겨울] 은은한 눈꽃 오로라와 겨울 새벽 하늘 */
+        body.winter {
+            background: 
+                radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 40%),
+                linear-gradient(135deg, #A1C4FD 0%, #C2E9FB 50%, #E0C3FC 100%);
+            background-attachment: fixed;
+        }
+
+        /* 중앙 메인 카드 컨테이너 (글래스모피즘 효과) */
         #game-container {
             width: 90%;
             max-width: 620px;
             text-align: center;
             padding: 40px 30px;
             box-sizing: border-box;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
             margin: 20px 0;
         }
 
@@ -69,7 +90,7 @@
             word-break: keep-all;
         }
         p.description {
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: #4A5568;
             margin-bottom: 25px;
             line-height: 1.6;
@@ -105,7 +126,7 @@
 
         /* 메인 버튼 */
         .btn-main {
-            background-color: #3182CE;
+            background-color: #2B6CB0;
             color: white;
             border: none;
             padding: 15px 40px;
@@ -113,12 +134,12 @@
             font-weight: bold;
             border-radius: 30px;
             margin-top: 10px;
-            box-shadow: 0 4px 14px rgba(49, 130, 206, 0.39);
+            box-shadow: 0 4px 14px rgba(43, 108, 176, 0.3);
         }
         .btn-main:hover {
-            background-color: #2B6CB0;
+            background-color: #1A365D;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(49, 130, 206, 0.45);
+            box-shadow: 0 6px 20px rgba(43, 108, 176, 0.4);
         }
 
         /* 퀴즈 선택지 버튼 디자인 */
@@ -129,16 +150,16 @@
             margin-top: 20px;
         }
         .btn-choice {
-            background-color: #FFFFFF;
+            background-color: rgba(255, 255, 255, 0.95);
             color: #2D3748;
             border: 2px solid #E2E8F0;
             padding: 16px 20px;
             font-size: 0.98rem;
             text-align: left;
-            border-radius: 14px;
+            border-radius: 16px;
             line-height: 1.5;
             word-break: keep-all;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
         .btn-choice:hover {
             border-color: #3182CE;
@@ -154,7 +175,7 @@
             margin-bottom: 25px;
             background-color: #F7FAFC;
             padding: 20px;
-            border-radius: 14px;
+            border-radius: 16px;
             border-left: 6px solid #3182CE;
             text-align: left;
             word-break: keep-all;
@@ -189,7 +210,7 @@
             background-color: #FFFFFF;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
         .leaderboard-table th, .leaderboard-table td {
             padding: 12px;
@@ -202,7 +223,7 @@
             font-weight: bold;
         }
         .leaderboard-table tr:first-child td {
-            color: #D69E2E; /* 1등 금색 처리 */
+            color: #D69E2E;
             font-weight: bold;
         }
     </style>
@@ -214,10 +235,10 @@
 
         <div id="scene-start" class="scene active">
             <h1>《1초의 선택》</h1>
-            <h2>계절별 고난도 응급상황, 당신의 상식은 정말 맞을까?</h2>
+            <h2>계절별로 알아보는 여러 응급상황 : 당신의 상식이 정답일까?</h2>
             <p class="description">
-                지금부터 10개의 계절별 응급 상황을 마주하게 됩니다.<br>
-                잘못 알고 있는 민간상식은 생명을 위협할 수 있습니다.<br>
+                여러분의 1초, 그 짧은 순간의 선택 하나가<br>
+                누군가의 목숨을 구할 수도, 혹은 위협할 수도 있습니다.
             </p>
             
             <div>
@@ -260,7 +281,8 @@
             </table>
 
             <p class="description">
-                오늘 배운 올바른 응급 처치법을 꼭 기억해 주세요!
+                이번 기회를 통해 잘못된 상식을 바로잡고,<br>
+                소중한 생명을 살리는 새로운 상식을 배워가시길 바랍니다.
             </p>
             <button class="btn-main" onclick="location.reload()">다시 도전하기</button>
         </div>
@@ -444,7 +466,6 @@
         function showQuestion() {
             const data = quizData[currentQuestionIndex];
             
-            // 문제 상황에 따라 계절 그라데이션 배경 적용
             document.body.className = data.season;
 
             document.getElementById('quiz-progress').innerText = `상황 ${currentQuestionIndex + 1} / 10`;
